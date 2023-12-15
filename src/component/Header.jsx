@@ -1,144 +1,104 @@
 import React, { useState } from 'react'
-import { BiSearch, BiSolidMicrophone, BiSolidUserCircle } from "react-icons/bi"
-import { Link } from 'react-router-dom'
-import { useAuth0 } from "@auth0/auth0-react";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { BsYoutube } from "react-icons/bs";
+import { AiOutlineSearch } from "react-icons/ai";
+import { FaMicrophone } from "react-icons/fa";
+import { RiVideoAddLine } from "react-icons/ri";
+import { BsBell } from "react-icons/bs";
+import { useDispatch } from 'react-redux';
+import { toggleMenu } from "../Redux/features/appslice"
+import { setsearchResults } from "../Redux/features/YoutubeSlice"
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+// const searchApi = "https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=";
+export const GOOGLE_API_KEY1 = "AIzaSyCks3LtQ0qXn3cJ-DWNCja3aCm2ybeDBp8";
 const Header = () => {
-    const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+
+    const dispatch = useDispatch()
+
+    const navigate = useNavigate();
+
+    const [searchTerm, changeSearchTerm] = useState("")
+
+
+    const requestUrl = `https://www.googleapis.com/youtube/v3/search?key=${GOOGLE_API_KEY1}&part=snippet&type=video&q=${searchTerm}&maxResults=${50}`;
+
+
+    const fetchYoutubeSearchResults = async () => {
+        try {
+            const response = await axios.get(requestUrl);
+            console.log(response.data); // This will contain the search results
+            dispatch(setsearchResults(response.data.items));
+           
+            navigate('/result');
+
+        } catch (error) {
+            console.error("Error fetching YouTube search results:", error);
+        }
+    }
+
+
+    const handleSearch = () => {
+        fetchYoutubeSearchResults();
+    }
+
+    // console.log(searchTerm, "--+++_____-searchTerm")
+
     return (
-        <>
+  
+        <div className="flex justify-between items-center px-2 lg:px-14 h-14  bg-[#212121] opacity-95 sticky top-0 z-50">
+            <div className="flex gap-1 sm:gap-2 lg:gap-8 items-center text-2xl">
+                <div className=''>
+                    <GiHamburgerMenu onClick={() => dispatch(toggleMenu())} />
+                </div>
+                <div className="flex gap-1 items-center justify-center">
+                    <BsYoutube className="text-3xl text-red-600 " />
+                    <span className="text-2xl hidden sm:block">Youtube</span>
+                </div>
+            </div>
+            <div className="flex items-center justify-center 
+             gap-2 lg:gap-5">
+                <div
 
-            <header className='w-full'>
-                <div className='max-w-[1200px] mx-auto px-[10px]'>
-
-                    <div class="grid grid-cols-[auto_70%] items-center py-1 ">
-                        <div className=''>
-                            <a class="flex  w-[100px] md:w-[200px] ">
-                                <img src="https://i.pinimg.com/originals/01/9c/ca/019cca15314a62b8fe7240bcc4b4528c.jpg" class=" mr-3" alt="Flowbite Logo" />
-                            </a>
+                >
+                    <div className="flex bg-zinc-900 items-center h-10 px-4 pr-0 rounded-3xl">
+                        <div className="flex gap-5 items-center pr-5">
+                            <input
+                                type="text"
+                                placeholder="Search"
+                                className=" w-full lg:w-96 bg-zinc-900 focus:outline-none border-none"
+                                value={searchTerm}
+                                onChange={(e) => changeSearchTerm(e.target.value)}
+                            />
                         </div>
-                        <div className=''>
-                            <div class=" flex justify-end">
-                                <ul class="font-medium flex flex-row p-4 md:p-0 mt-4 rounded-lg  md:flex-row space-x-4  md:space-x-4 md:mt-0   dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                                    <li>
-                                        <Link to="#" class=" py-3 px-3 block text-[16px] font-Lato  text-white bg-[#004b87] hover:bg-[#51830f] duration-[0.5] dark:text-white rounded md:dark:text-blue-500" aria-current="page">Employer Login </Link>
-                                    </li>
-                                    <li>
-                                        <Link to="#" class="block py-3 px-3  text-[16px] font-Lato  text-white bg-[#004b87] hover:bg-[#51830f] duration-[0.5] dark:text-white rounded md:dark:text-blue-500" aria-current="page">Candidate Login</Link>
-                                    </li>
-                                    <li>
-                                        {/* <Link to="#" class="block py-3 px-3 text-[16px] font-Lato  text-white bg-[#004b87] hover:bg-[#51830f] duration-[0.5] dark:text-white md:dark:text-blue-500" aria-current="page">Login</Link> */}
-                                    </li>
-                                </ul>
-                            </div>
-
-                        </div>
-
+                        <button
+                            onClick={handleSearch}
+                            className="h-10 w-16 flex items-center justify-center bg-zinc-800 rounded-r-3xl">
+                            <AiOutlineSearch className="text-xl " />
+                        </button>
                     </div>
                 </div>
-                <div class="bg-[#004b87] px-[10px]" >
-                    <nav class="">
-                        <div class="max-w-screen-xl flex flex-wrap items-center md:justify-start justify-between mx-auto ">
-                            <a href="" class="flex items-center">
-                                <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo" />
-                                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
-                            </a>
-                            <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
-                                <span class="sr-only">Open main menu</span>
-                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
-                                </svg>
-                            </button>
-                            <div class="hidden w-full md:block md:w-auto" id="navbar-default">
-                                <ul class="font-Lato  font-[600] flex flex-col  md:p-0 mt-4  md:flex-row md:space-x-8 md:mt-0  dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                                    <li>
-                                        <a href="#" class="block px-3 py-2 xl:px-5 xl:py-3.5  hover:bg-[#52514e]   text-white" >Academics</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="block px-3 py-2 xl:px-5 xl:py-3.5  hover:bg-[#52514e]  text-white" >Academics</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="block px-3 py-2 xl:px-5 xl:py-3.5  hover:bg-[#52514e]  text-white" >Academics</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="block px-3 py-2 xl:px-5 xl:py-3.5   hover:bg-[#52514e] text-white" >Academics</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="block px-3 py-2 xl:px-5 xl:py-3.5   hover:bg-[#52514e] text-white" >Academics</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </nav>
 
-
-
-
-
-                    {/* <ul class=" font-Lato flex flex-col p-4 md:p-0 mt-4   md:flex-row    md:mt-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                        <li>
-                            <a href="#" class="block px-3 py-2 xl:px-5 xl:py-2 font-semibold  text-white" >Academics</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block px-3 py-2 xl:px-5 xl:py-2 font-semibold  text-white" >Academics</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block px-3 py-2 xl:px-5 xl:py-2 font-semibold  text-white" >Academics</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block px-3 py-2 xl:px-5 xl:py-2 font-semibold  text-white" >Academics</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block px-3 py-2 xl:px-5 xl:py-2 font-semibold text-white" >Academics</a>
-                        </li>
-                        <li>
-                            <a href="#" class=" hidden lg:block  px-3 py-2 xl:px-5 xl:py-2 font-semibold text-black text-white" >Academics</a>
-                        </li>
-
-
-                    </ul> */}
+                <div className="text-xl p-3 bg-zinc-900 rounded-full">
+                    <FaMicrophone />
                 </div>
-            </header>
-
-
-            {/* <section className='w-full'>
-                <div className="bg-[url('https://content.georgiancollege.ca/wp-content/uploads/WEB-21-597-Web-Header-HomePage.jpg')]
-                 bg-cover bg-center py-[30px] bg-no-repeat w-full ">
-                    <div className=' px-5 md:px-32 flex flex-col justify-center'>
-                        <h1 className='capitalize font-[400] text-blue-500  md:text-[3.2rem]'>Experience</h1>
-                        <div className=' w-[300px] md:w-[400px] '>
-                            <img src="https://content.georgiancollege.ca/wp-content/uploads/MORE_Shadow.png" alt="" />
-                        </div>
-                    </div>
-
-                    <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-5   px-2 md:px-28'>
-                        <div className='flex justify-center items-center bg-[#004b87] p-3 text-white'>Programs</div>
-                        <div className='flex justify-center items-center bg-[#004b87] p-3 text-white'>Programs</div>
-                        <div className='flex justify-center items-center bg-[#004b87] p-3 text-white'>Programs</div>
-
-                        <div className='flex justify-center items-center bg-[#004b87] p-3 text-white'>Programs</div>
-                    </div>
-
-
+            </div>
+            <div className="flex gap-1 sm:gap-2 lg:gap-8 items-center text-xl">
+                <RiVideoAddLine />
+                <div className="relative">
+                    <BsBell />
+                    <span className="absolute bottom-2 left-2 text-xs bg-red-600 rounded-full px-1">
+                        {" "}
+                        9+{" "}
+                    </span>
                 </div>
-            </section> */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </>
+                <img
+                    src="https://yt3.googleusercontent.com/Ad8Q8PblBvMbfVEEpuSiAvcLoI6XqEecc4GEjCN41716Zc1lLEjR6lPB4JXjKzMLVFYskARDaNU=s900-c-k-c0x00ffffff-no-rj"
+                    alt="profile logo"
+                    className="w-9 h-9 rounded-full"
+                />
+            </div>
+        </div>
     )
 }
 
